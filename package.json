@@ -1,0 +1,22 @@
+{
+	"name": "server",
+	"version": "0.0.1",
+	"description": "A website to help people in 12 step communities.",
+	"main": "index.js",
+	"scripts": {
+		"start": "node index.js",
+		"test": "npm test"
+	},
+	"author": "Dylan Crane",
+	"license": "ISC",
+	"dependencies": {
+		"cors": "^2.8.5",
+		"dotenv": "^16.3.1",
+		"express": "^4.18.2",
+		"mongodb": "^6.3.0",
+		"mongoose": "^8.0.1"
+	},
+	"devDependencies": {
+		"nodemon": "^3.0.1"
+	}
+}
