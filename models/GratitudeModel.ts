@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const gratitudeSchema = new mongoose.Schema({
 	userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -11,9 +11,7 @@ const gratitudeSchema = new mongoose.Schema({
 	],
 });
 
-const Gratitude = mongoose.model('Gratitude', gratitudeSchema);
-
-module.exports = Gratitude;
+export const Gratitude = mongoose.model('Gratitude', gratitudeSchema);
 
 // const newGratitude = new Gratitude({
 // 	userId: userId, // Replace with the actual user's ID

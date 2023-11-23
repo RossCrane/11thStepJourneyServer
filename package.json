@@ -4,7 +4,9 @@
 	"description": "A website to help people in 12 step communities.",
 	"main": "index.js",
 	"scripts": {
-		"start": "ts-node-dev index.ts",
+		"start": "node build/index.js",
+		"build": "tsc",
+		"dev": "concurrently \"npx tsc --watch\" \"nodemon -q build/index.js\"",
 		"test": "npm test"
 	},
 	"author": "Dylan Crane",
@@ -19,8 +21,10 @@
 	},
 	"devDependencies": {
 		"@types/express": "^4.17.21",
+		"@types/mocha": "^10.0.5",
+		"concurrently": "^8.2.2",
+		"mocha": "^10.2.0",
 		"nodemon": "^3.0.1",
-		"ts-node-dev": "^2.0.0",
 		"typescript": "^5.3.2"
 	}
 }

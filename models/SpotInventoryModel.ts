@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 // Will need to be altered this was made quickly
 const spotInventorySchema = new mongoose.Schema({
@@ -78,6 +78,7 @@ const spotInventorySchema = new mongoose.Schema({
 	},
 });
 
-const SpotInventory = mongoose.model('SpotInventory', spotInventorySchema);
-
-module.exports = SpotInventory;
+export const SpotInventory = mongoose.model(
+	'SpotInventory',
+	spotInventorySchema
+);

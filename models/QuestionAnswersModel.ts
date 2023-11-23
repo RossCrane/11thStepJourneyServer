@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 // May need to be altered this was made quickly
 const questionResponceSchema = new mongoose.Schema({
@@ -13,12 +13,10 @@ const questionResponceSchema = new mongoose.Schema({
 	responsesToResponse: [{ type: String }], // Stretch goal
 });
 
-const QuestionResponce = mongoose.model(
+export const QuestionResponce = mongoose.model(
 	'QuestionAnswer',
 	questionResponceSchema
 );
-
-module.exports = QuestionResponce;
 
 // const newQuestionAnswer = new QuestionAnswer({
 // 	userId: userId, // Replace with the actual user's ID

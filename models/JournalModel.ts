@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const journalEntrySchema = new mongoose.Schema({
 	userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -7,9 +7,7 @@ const journalEntrySchema = new mongoose.Schema({
 	content: { type: String, required: true },
 });
 
-const JournalEntry = mongoose.model('JournalEntry', journalEntrySchema);
-
-module.exports = JournalEntry;
+export const JournalEntry = mongoose.model('JournalEntry', journalEntrySchema);
 
 // const newJournalEntry = new JournalEntry({
 // 	userId: userId, // Replace with the actual user's ID

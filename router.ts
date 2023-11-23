@@ -1,7 +1,7 @@
 'use strict';
 
-const express = require('express');
+import express from 'express';
 const router = express.Router();
 // const Controller = require('./controllers/controller.js');
 
-module.exports = router;
+export default router;

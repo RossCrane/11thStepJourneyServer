@@ -1,6 +1,6 @@
 'use strict';
 
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 // May need to be altered this was made quickly
 const userSchema = new mongoose.Schema({
@@ -19,6 +19,4 @@ const userSchema = new mongoose.Schema({
 	homeGroup: { type: String }, // You may want to link this to another schema or model
 });
 
-const User = mongoose.model('User', userSchema);
-
-module.exports = User;
+export const User = mongoose.model('User', userSchema);

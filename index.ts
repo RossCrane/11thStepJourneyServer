@@ -2,15 +2,16 @@
 
 require('dotenv').config();
 
-const express = require('express');
-const connectDB = require('./models/index');
-const router = require('./router');
+import express from 'express';
+import { connectDB } from './models/index';
+import router from './router';
+import cors from 'cors';
+
 const app = express();
-const cors = require('cors');
 // const cookieParser = require('cookie-parser');
 
 const corsOptions = {
-	origin: 'http://localhost:5173', // Replace with your frontend's actual origin
+	origin: process.env.CLIENT_URL, // Replace with your frontend's actual origin
 	credentials: true, // Allow credentials (cookies, authorization headers, etc.)
 };
 
