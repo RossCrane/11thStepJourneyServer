@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema({
 	passwordOrToken: { type: String, required: true },
 	firstName: { type: String },
 	lastName: { type: String },
+	soberDate: { type: Date },
 	phone: { type: String },
 	anonymousFlag: { type: Boolean },
 	state: { type: String },
