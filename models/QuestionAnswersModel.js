@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 // May need to be altered this was made quickly
-const questionAnswerSchema = new mongoose.Schema({
+const questionResponceSchema = new mongoose.Schema({
 	userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
 	date: { type: Date, default: Date.now },
 	responses: [
@@ -13,9 +13,12 @@ const questionAnswerSchema = new mongoose.Schema({
 	responsesToResponse: [{ type: String }], // Stretch goal
 });
 
-const QuestionAnswer = mongoose.model('QuestionAnswer', questionAnswerSchema);
+const QuestionResponce = mongoose.model(
+	'QuestionAnswer',
+	questionResponceSchema
+);
 
-module.exports = QuestionAnswer;
+module.exports = QuestionResponce;
 
 // const newQuestionAnswer = new QuestionAnswer({
 // 	userId: userId, // Replace with the actual user's ID
