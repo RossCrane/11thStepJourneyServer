@@ -1,24 +1,34 @@
-import mongoose from 'mongoose';
+import mongoose, { Document, Schema, Model, Types } from "mongoose";
 
-const journalEntrySchema = new mongoose.Schema({
-	userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-	title: { type: String, required: true },
-	timestamp: { type: Date, default: Date.now },
-	content: { type: String, required: true },
-});
+interface IUser extends Document {
+  email: string;
+  passwordOrToken: string;
+  firstName?: string;
+  lastName?: string;
+  soberDate?: Date;
+  phone?: string;
+  anonymousFlag?: boolean;
+  state?: string;
+  city?: string;
+  aaFlag?: boolean;
+  caFlag?: boolean;
+  naFlag?: boolean;
+  homeGroup?: string;
+}
 
-export const JournalEntry = mongoose.model('JournalEntry', journalEntrySchema);
+interface IJournalEntry extends Document {
+  userId: IUser["_id"];
+  title: string;
+  timestamp: Date;
+  content: string;
+}
 
-// const newJournalEntry = new JournalEntry({
-// 	userId: userId, // Replace with the actual user's ID
-// 	title: 'My Journal Entry Title',
-// 	content: 'This is the content of my journal entry...',
-// });
+const journalEntrySchema: Schema<IJournalEntry> = new Schema<IJournalEntry>({
+  userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  title: { type: String, required: true },
+  timestamp: { type: Date, default: Date.now },
+  content: { type: String, required: true },
+}); // post route
 
-// newJournalEntry.save((err) => {
-// 	if (err) {
-// 		console.error(err);
-// 	} else {
-// 		console.log('Journal entry saved successfully.');
-// 	}
-// });
+export const JournalEntryModel: Model<IJournalEntry> =
+  mongoose.model<IJournalEntry>("JournalEntry", journalEntrySchema);

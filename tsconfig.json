@@ -1,10 +1,9 @@
 {
-	"compilerOptions": {
-		"module": "commonjs",
-		"target": "es6",
-		"outDir": "build",
-		"esModuleInterop": true,
-		"skipLibCheck": true,
-		"types": ["mocha" /* ... other types ... */]
-	}
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es6",
+    "outDir": "build",
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  }
 }

@@ -1,31 +1,42 @@
-import mongoose from 'mongoose';
+import mongoose, { Document, Schema, Model, Types } from "mongoose";
 
-const gratitudeSchema = new mongoose.Schema({
-	userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-	date: { type: Date, default: Date.now },
-	items: [
-		{
-			gratitudeNumber: { type: Number, required: true },
-			gratitude: { type: String },
-		},
-	],
-});
+interface IUser extends Document {
+  email: string;
+  passwordOrToken: string;
+  firstName?: string;
+  lastName?: string;
+  soberDate?: Date;
+  phone?: string;
+  anonymousFlag?: boolean;
+  state?: string;
+  city?: string;
+  aaFlag?: boolean;
+  caFlag?: boolean;
+  naFlag?: boolean;
+  homeGroup?: string;
+}
 
-export const Gratitude = mongoose.model('Gratitude', gratitudeSchema);
+interface IGratitude extends Document {
+  userId: IUser["_id"];
+  date: Date;
+  items: Types.Array<{
+    gratitudeNumber: number;
+    gratitude: string;
+  }>;
+}
 
-// const newGratitude = new Gratitude({
-// 	userId: userId, // Replace with the actual user's ID
-// 	items: [
-// 		{ itemNumber: 1, text: 'Gratitude item 1' },
-// 		{ itemNumber: 2, text: 'Gratitude item 2' },
-// 		// Add more gratitude items as needed
-// 	],
-// });
+const gratitudeSchema: Schema<IGratitude> = new Schema<IGratitude>({
+  userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  date: { type: Date, default: Date.now },
+  items: [
+    {
+      gratitudeNumber: { type: Number, required: true },
+      gratitude: { type: String },
+    },
+  ],
+}); //post route
 
-// newGratitude.save((err) => {
-// 	if (err) {
-// 		console.error(err);
-// 	} else {
-// 		console.log('Gratitude saved successfully.');
-// 	}
-// });
+export const GratitudeModel: Model<IGratitude> = mongoose.model<IGratitude>(
+  "Gratitude",
+  gratitudeSchema
+);

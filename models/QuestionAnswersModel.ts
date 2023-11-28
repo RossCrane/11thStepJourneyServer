@@ -1,37 +1,44 @@
-import mongoose from 'mongoose';
+import mongoose, { Document, Schema, Model, Types } from "mongoose";
+import { UserModel } from "./UserModel";
 
-// May need to be altered this was made quickly
-const questionResponceSchema = new mongoose.Schema({
-	userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-	date: { type: Date, default: Date.now },
-	responses: [
-		{
-			questionNumber: { type: Number, required: true },
-			response: { type: String },
-		},
-	],
-	responsesToResponse: [{ type: String }], // Stretch goal
-});
+interface IUser extends Document {
+  email: string;
+  passwordOrToken: string;
+  firstName?: string;
+  lastName?: string;
+  soberDate?: Date;
+  phone?: string;
+  anonymousFlag?: boolean;
+  state?: string;
+  city?: string;
+  aaFlag?: boolean;
+  caFlag?: boolean;
+  naFlag?: boolean;
+  homeGroup?: string;
+}
 
-export const QuestionResponce = mongoose.model(
-	'QuestionAnswer',
-	questionResponceSchema
-);
+interface IQuestionResponse extends Document {
+  userId: IUser["_id"];
+  date: Date;
+  responses: Types.Array<{
+    questionNumber: number;
+    response: string;
+  }>;
+  responsesToResponse: Types.Array<string>; // Stretch goal
+}
 
-// const newQuestionAnswer = new QuestionAnswer({
-// 	userId: userId, // Replace with the actual user's ID
-// 	responses: [
-// 		{ questionNumber: 1, response: 'Response to question 1' },
-// 		{ questionNumber: 2, response: 'Response to question 2' },
-// 		// Add more responses as needed
-// 	],
-// 	// Other fields (responsesToResponse, gratitudes, etc.)
-// });
+const questionResponseSchema: Schema<IQuestionResponse> =
+  new Schema<IQuestionResponse>({
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    date: { type: Date, default: Date.now },
+    responses: [
+      {
+        questionNumber: { type: Number, required: true },
+        response: { type: String },
+      },
+    ],
+    responsesToResponse: [{ type: String }], // Stretch goal
+  }); //post route
 
-// newQuestionAnswer.save((err) => {
-// 	if (err) {
-// 		console.error(err);
-// 	} else {
-// 		console.log('QuestionAnswer saved successfully.');
-// 	}
-// });
+export const QuestionResponseModel: Model<IQuestionResponse> =
+  mongoose.model<IQuestionResponse>("QuestionAnswer", questionResponseSchema);
