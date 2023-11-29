@@ -25,7 +25,7 @@ export const register = async (
   req: Request,
   res: Response
 ): Promise<void | Response> => {
-  const { firstName, lastName, email, password } = req.body;
+  const { email, password } = req.body;
   const user = await UserModel.findOne({ email });
 
   if (user) {
@@ -35,7 +35,7 @@ export const register = async (
     });
   }
   try {
-    if (!firstName || !lastName || !email || !password) {
+    if (!email || !password) {
       return res.status(400).send({
         res: { data: "Invalid Form Fields!", statusCode: 400 },
         error: true,
@@ -55,11 +55,10 @@ export const register = async (
 
     const hashedPassword = await bcrypt.hash(password, 10);
     await UserModel.create({
-      firstName,
-      lastName,
       email,
       password: hashedPassword,
     });
+
     res.status(200).json({ msg: "Congratulations!! Account created " });
   } catch (error) {
     console.error(error);
@@ -109,6 +108,7 @@ export const login = async (
       .status(200)
       .json({ token, user, status: true, msg: "Login successful.." });
   } catch (e) {
+    console.log(e);
     return res
       .status(401)
       .send({ error: "401", message: "Username or password is incorrect" });
@@ -126,4 +126,12 @@ export const profile = async (
   } catch (error) {
     return res.status(404).send({ error, message: "Resource not found" });
   }
+};
+
+export const logout = async (
+  req: Request & { user: IUser },
+  res: Response
+): Promise<void | Response> => {
+  res.clearCookie("jwtToken");
+  res.status(200).json({ message: "Logged out successfully" });
 };
