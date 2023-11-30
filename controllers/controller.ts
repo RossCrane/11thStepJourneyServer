@@ -262,3 +262,45 @@ export const saveSoberDate = async (
     });
   }
 };
+
+export const getSoberDate = async (
+  req: Request,
+  res: Response
+): Promise<void | Response> => {
+  try {
+    const userId = req.body.user?._id;
+
+    if (!userId) {
+      return res.status(400).json({
+        error: true,
+        message: "User ID not provided in the request",
+      });
+    }
+
+    const user: IUser | null = await UserModel.findById(userId).exec();
+
+    if (!user) {
+      return res.status(404).json({
+        error: true,
+        message: "User not found",
+      });
+    }
+
+    const soberDate: Date | undefined = user.soberDate;
+
+    if (!soberDate) {
+      return res.status(404).json({
+        error: true,
+        message: "Sober date not found for the user",
+      });
+    }
+
+    res.status(200).send("Sober date: " + soberDate);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error: true,
+      message: "Internal Server Error",
+    });
+  }
+};
