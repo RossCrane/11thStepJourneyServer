@@ -16,7 +16,7 @@ interface IUser extends Document {
   homeGroup?: string;
 }
 
-interface IGratitude extends Document {
+export interface IGratitude extends Document {
   userId: IUser["_id"];
   date: Date;
   items: Types.Array<{

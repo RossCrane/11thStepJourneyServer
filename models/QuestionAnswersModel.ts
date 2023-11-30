@@ -17,7 +17,7 @@ interface IUser extends Document {
   homeGroup?: string;
 }
 
-interface IQuestionResponse extends Document {
+export interface IQuestionResponse extends Document {
   userId: IUser["_id"];
   date: Date;
   responses: Types.Array<{

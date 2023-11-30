@@ -46,7 +46,7 @@ const authMiddleware = async (
         }
 
         // Attach the user object to the request
-        (req as any).user = user;
+        (req as any).body.user = user;
         next(); // Proceed to the next middleware
       }
     });

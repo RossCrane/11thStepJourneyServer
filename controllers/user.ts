@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { createAccessToken } from "../utils/token";
+import { BlacklistModel } from "../utils/blacklist";
 
 import { UserModel } from "../models/UserModel";
 
@@ -54,12 +55,12 @@ export const register = async (
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    await UserModel.create({
+    const user = await UserModel.create({
       email,
       password: hashedPassword,
     });
-
-    res.status(200).json({ msg: "Congratulations!! Account created " });
+    const token: string = createAccessToken({ id: user._id });
+    res.status(200).json({ token, msg: "Congratulations!! Account created " });
   } catch (error) {
     console.error(error);
     return res.status(500).send({
@@ -120,18 +121,53 @@ export const profile = async (
   res: Response
 ): Promise<void | Response> => {
   try {
-    const { _id, firstName, lastName } = req.user;
-    const user = { _id, firstName, lastName };
-    res.status(200).send(user);
+    const userId = req.body.user._id;
+
+    const updatedUserData: Partial<IUser> = req.body;
+
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      userId,
+      updatedUserData,
+      { new: true } // Return the updated user document
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json(updatedUser);
   } catch (error) {
-    return res.status(404).send({ error, message: "Resource not found" });
+    console.error(error);
+    return res.status(500).json({ error, message: "Internal Server Error" });
   }
 };
 
-export const logout = async (
-  req: Request & { user: IUser },
+//Blacklist for Dylan's reference
+export async function logout(
+  req: Request,
   res: Response
-): Promise<void | Response> => {
-  res.clearCookie("jwtToken");
-  res.status(200).json({ message: "Logged out successfully" });
-};
+): Promise<void | Response> {
+  // try {
+  //   const authHeader = req.headers['cookie']; // get the session cookie from request header
+  //   if (!authHeader) return res.sendStatus(204); // No content
+  //   const cookie = authHeader.split('=')[1]; // If there is, split the cookie string to get the actual jwt token
+  //   const accessToken = cookie.split(';')[0];
+  //   const checkIfBlacklisted = await Blacklist.findOne({ token: accessToken }); // Check if that token is blacklisted
+  //   // if true, send a no content response.
+  //   if (checkIfBlacklisted) return res.sendStatus(204);
+  //   // otherwise blacklist token
+  //   const newBlacklist = new Blacklist({
+  //     token: accessToken,
+  //   });
+  //   await newBlacklist.save();
+  //   // Also clear request cookie on client
+  //   res.setHeader('Clear-Site-Data', '"cookies"');
+  //   res.status(200).json({ message: 'You are logged out!' });
+  // } catch (err) {
+  //   res.status(500).json({
+  //     status: 'error',
+  //     message: 'Internal Server Error',
+  //   });
+  // }
+  // res.end();
+}

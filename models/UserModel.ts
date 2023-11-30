@@ -31,7 +31,7 @@ interface IJournalEntry extends Document {
   content: string;
 }
 
-interface IUser extends Document {
+export interface IUser extends Document {
   _id: string;
   email: string;
   password: string;

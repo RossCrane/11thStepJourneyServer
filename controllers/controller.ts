@@ -1,20 +1,30 @@
 "use strict";
 
 import { Request, Response } from "express";
-import { QuestionResponseModel } from "../models/QuestionAnswersModel";
+import {
+  QuestionResponseModel,
+  IQuestionResponse,
+} from "../models/QuestionAnswersModel";
 import { JournalEntryModel } from "../models/JournalModel";
-import { GratitudeModel } from "../models/GratitudeModel";
-import { UserModel } from "../models/UserModel";
+import { GratitudeModel, IGratitude } from "../models/GratitudeModel";
+import { UserModel, IUser } from "../models/UserModel";
+
+interface CreateQuestionResponse extends Request {
+  body: {
+    responses: any[];
+    user: { _id: string };
+  };
+}
 
 export const createQuestionResponse = async (
-  req: Request,
+  req: CreateQuestionResponse,
   res: Response
 ): Promise<Response> => {
   try {
-    const { userId, responses } = req.body;
+    const { user, responses } = req.body;
 
     // Validate req body
-    if (!userId || !responses || !Array.isArray(responses)) {
+    if (!user || !responses || !Array.isArray(responses)) {
       return res.status(400).json({
         error: true,
         message: "Invalid form fields",
@@ -22,7 +32,7 @@ export const createQuestionResponse = async (
     }
 
     const newQuestionResponse = new QuestionResponseModel({
-      userId,
+      userId: user._id,
       responses,
     });
 
@@ -30,7 +40,7 @@ export const createQuestionResponse = async (
     const savedQuestionResponse = await newQuestionResponse.save();
 
     await UserModel.findByIdAndUpdate(
-      userId,
+      user._id,
       { $push: { questions: savedQuestionResponse } },
       { new: true }
     );
@@ -49,15 +59,23 @@ export const createQuestionResponse = async (
   }
 };
 
+interface CreateJournalEntry extends Request {
+  body: {
+    title: string;
+    content: string;
+    user: { _id: string };
+  };
+}
+
 export const createJournalEntry = async (
-  req: Request,
+  req: CreateJournalEntry,
   res: Response
 ): Promise<Response> => {
   try {
-    const { userId, title, content } = req.body;
+    const { user, title, content } = req.body;
 
     // Validate the request body
-    if (!userId || !title || !content) {
+    if (!user || !title || !content) {
       return res.status(400).json({
         error: true,
         message: "Invalid request body",
@@ -65,14 +83,14 @@ export const createJournalEntry = async (
     }
 
     const newJournalEntry = new JournalEntryModel({
-      userId,
+      userId: user._id,
       title,
       content,
     });
 
     const savedJournalEntry = await newJournalEntry.save();
     await UserModel.findByIdAndUpdate(
-      userId,
+      user._id,
       { $push: { journal: savedJournalEntry } },
       { new: true }
     );
@@ -91,14 +109,24 @@ export const createJournalEntry = async (
   }
 };
 
+// interface UserWithId extends IUser {
+//   _id: string;
+// }
+
+interface CreateGratitudeEntry extends Request {
+  body: {
+    items: any[];
+    user: { _id: string };
+  };
+}
 export const createGratitudeEntry = async (
-  req: Request,
+  req: CreateGratitudeEntry,
   res: Response
 ): Promise<Response> => {
   try {
-    const { userId, items } = req.body;
+    const { user, items } = req.body;
 
-    if (!userId || !items || !Array.isArray(items)) {
+    if (!user || !items || !Array.isArray(items)) {
       return res.status(400).json({
         error: true,
         message: "Invalid request body",
@@ -106,13 +134,13 @@ export const createGratitudeEntry = async (
     }
 
     const newGratitudeEntry = new GratitudeModel({
-      userId,
+      userId: user._id,
       items,
     });
 
     const savedGratitudeEntry = await newGratitudeEntry.save();
     await UserModel.findByIdAndUpdate(
-      userId,
+      user._id,
       { $push: { gratitudeModel: savedGratitudeEntry } },
       { new: true }
     );
@@ -125,6 +153,67 @@ export const createGratitudeEntry = async (
   } catch (error) {
     console.error(error);
     return res.status(500).json({
+      error: true,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+interface GetAllGratitudeEntries extends Request {
+  body: {
+    user: { _id: string };
+  };
+}
+
+export const getAllGratitudeEntries = async (
+  req: GetAllGratitudeEntries,
+  res: Response
+): Promise<void> => {
+  try {
+    const userId = req.body.user?._id;
+
+    const gratitudeEntries: IGratitude[] = await GratitudeModel.find({
+      userId,
+    }).exec();
+
+    res.status(200).json({
+      success: true,
+      data: gratitudeEntries,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error: true,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+interface GetAllQuestionResponses extends Request {
+  body: {
+    user: { _id: string };
+  };
+}
+
+export const getAllQuestionResponses = async (
+  req: GetAllQuestionResponses,
+  res: Response
+): Promise<void> => {
+  try {
+    const userId: string = req.body.user?._id;
+
+    const questionResponses: IQuestionResponse[] =
+      await QuestionResponseModel.find({
+        userId,
+      }).exec();
+
+    res.status(200).json({
+      success: true,
+      data: questionResponses,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
       error: true,
       message: "Internal Server Error",
     });

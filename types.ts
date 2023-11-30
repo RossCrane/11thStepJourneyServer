@@ -3,6 +3,7 @@ import { Request as ExpressRequest } from "express";
 import { UserModel } from "./models/UserModel";
 
 interface IUser extends Document {
+  _id: string;
   id: string;
   email: string;
   password: string;
@@ -21,6 +22,6 @@ interface IUser extends Document {
 
 declare module "express" {
   interface Request {
-    user?: IUser; // Add your custom properties here
+    user?: IUser;
   }
 }

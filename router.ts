@@ -8,11 +8,13 @@ import * as controller from "./controllers/controller";
 
 router.post("/register", userController.register);
 router.post("/login", userController.login);
-router.get("/me", authMiddleware, userController.profile);
-router.post("/logout", authMiddleware, userController.logout);
+router.put("/profile", authMiddleware, userController.profile);
+router.get("/logout", authMiddleware, userController.logout);
 
 router.post("/response", authMiddleware, controller.createQuestionResponse);
 router.post("/journal", authMiddleware, controller.createJournalEntry);
 router.post("/gratitude", authMiddleware, controller.createGratitudeEntry);
+router.get("/gratitude", authMiddleware, controller.getAllGratitudeEntries);
+router.get("/response", authMiddleware, controller.getAllQuestionResponses);
 router.post("/soberDate", authMiddleware, controller.saveSoberDate);
 export default router;
