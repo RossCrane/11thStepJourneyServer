@@ -225,10 +225,10 @@ export const saveSoberDate = async (
   res: Response
 ): Promise<Response> => {
   try {
-    const { userId, soberDate } = req.body;
+    const { user, soberDate } = req.body;
 
     // Validate the request body
-    if (!userId || !soberDate) {
+    if (!user || !soberDate) {
       return res.status(400).json({
         error: true,
         message: "Invalid request body",
@@ -237,7 +237,7 @@ export const saveSoberDate = async (
 
     // Update the user's soberDate field
     const updatedUser = await UserModel.findByIdAndUpdate(
-      userId,
+      user,
       { soberDate },
       { new: true }
     );
@@ -250,6 +250,49 @@ export const saveSoberDate = async (
     }
 
     return res.status(200).json({
+      success: true,
+      message: "Sober date updated successfully",
+      data: updatedUser,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      error: true,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+export const updateSoberDate = async (
+  req: Request,
+  res: Response
+): Promise<void | Response> => {
+  try {
+    const userId = req.body.user?._id;
+
+    const { soberDate } = req.body;
+
+    if (!soberDate) {
+      return res.status(400).json({
+        error: true,
+        message: "Invalid request body",
+      });
+    }
+
+    const updatedUser: IUser | null = await UserModel.findByIdAndUpdate(
+      userId,
+      { soberDate },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        error: true,
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json({
       success: true,
       message: "Sober date updated successfully",
       data: updatedUser,

@@ -19,4 +19,5 @@ router.get("/gratitude", authMiddleware, controller.getAllGratitudeEntries);
 router.get("/response", authMiddleware, controller.getAllQuestionResponses);
 router.post("/soberDate", authMiddleware, controller.saveSoberDate);
 router.get("/soberDate", authMiddleware, controller.getSoberDate);
+router.put("/soberDate", authMiddleware, controller.updateSoberDate);
 export default router;
