@@ -295,7 +295,7 @@ export const getSoberDate = async (
       });
     }
 
-    res.status(200).send("Sober date: " + soberDate);
+    res.status(200).json({ soberDate: soberDate });
   } catch (error) {
     console.error(error);
     res.status(500).json({

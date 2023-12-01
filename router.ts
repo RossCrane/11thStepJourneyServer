@@ -9,6 +9,7 @@ import * as controller from "./controllers/controller";
 router.post("/register", userController.register);
 router.post("/login", userController.login);
 router.put("/profile", authMiddleware, userController.profile);
+router.get("/profile", authMiddleware, userController.getProfile);
 router.get("/logout", authMiddleware, userController.logout);
 
 router.post("/response", authMiddleware, controller.createQuestionResponse);

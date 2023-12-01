@@ -142,6 +142,53 @@ export const profile = async (
   }
 };
 
+export const getProfile = async (
+  req: Request,
+  res: Response
+): Promise<void | Response> => {
+  try {
+    const userId: string = req.body.user?._id;
+
+    const user: IUser | null = await UserModel.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        error: true,
+        message: "User not found",
+      });
+    }
+
+    const userProfile = {
+      _id: user._id,
+      email: user.email,
+      password: user.password,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      soberDate: user.soberDate,
+      phone: user.phone,
+      anonymousFlag: user.anonymousFlag,
+      state: user.state,
+      city: user.city,
+      aaFlag: user.aaFlag,
+      caFlag: user.caFlag,
+      naFlag: user.naFlag,
+      homeGroup: user.homeGroup,
+    };
+
+    // Respond with the user profile
+    res.status(200).json({
+      success: true,
+      data: userProfile,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      error: true,
+      message: "Internal Server Error",
+    });
+  }
+};
+
 //Blacklist for Dylan's reference
 export async function logout(
   req: Request,
