@@ -189,11 +189,19 @@ export const getProfile = async (
   }
 };
 
+export const getUsers = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const users: IUser[] = await UserModel.find({}, "_id firstName");
+
+    res.json(users);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error fetching users" });
+  }
+};
+
 //Blacklist for Dylan's reference
-export async function logout(
-  req: Request,
-  res: Response
-): Promise<void | Response> {
+async function logout(req: Request, res: Response): Promise<void | Response> {
   // try {
   //   const authHeader = req.headers['cookie']; // get the session cookie from request header
   //   if (!authHeader) return res.sendStatus(204); // No content
