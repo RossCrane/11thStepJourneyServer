@@ -1,61 +1,158 @@
-import { Request, Response } from "express";
-import ChatModel, { IChat } from "../models/chatModel";
+import { Request, Response } from 'express';
+import ChatModel, { IChat } from '../models/chatModel';
+import { UserModel } from '../models/UserModel';
 
 export const createChat = async (
-  req: Request,
-  res: Response
+	req: Request,
+	res: Response
 ): Promise<Response> => {
-  const { firstId, secondId } = req.body;
-  try {
-    const chat: IChat | null = await ChatModel.findOne({
-      members: { $all: [firstId, secondId] },
-    });
+	const { firstId, secondId } = req.body;
+	// console.log('firstId', firstId);
+	// console.log('secondId', secondId);
+	try {
+		const chat: IChat | null = await ChatModel.findOne({
+			members: { $all: [firstId, secondId] },
+		});
 
-    if (chat) {
-      return res.status(200).json(chat);
-    }
+		if (chat) {
+			return res.status(200).json(chat);
+		}
 
-    const newChat = new ChatModel({
-      members: [firstId, secondId],
-    });
+		const newChat = new ChatModel({
+			members: [firstId, secondId],
+		});
 
-    const response: IChat = await newChat.save();
-    res.status(200).json(response);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json(error);
-  }
+		const response: IChat = await newChat.save();
+		res.status(200).json(response);
+	} catch (error) {
+		console.error(error);
+		res.status(500).json(error);
+	}
 };
 
 export const findUserChats = async (
-  req: Request,
-  res: Response
+	req: Request,
+	res: Response
 ): Promise<void> => {
-  const userId: string = req.params.id; // req.body.user?._Id;
+	const userId: string = req.params.id; // req.body.user?._Id;
 
-  try {
-    const chats: IChat[] = await ChatModel.find({
-      members: { $in: [userId] },
-    });
+	try {
+		const chats: IChat[] = await ChatModel.find({
+			members: { $in: [userId] },
+		});
 
-    res.status(200).json(chats);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json(error);
-  }
+		res.status(200).json(chats);
+	} catch (error) {
+		console.error(error);
+		res.status(500).json(error);
+	}
 };
 
+interface GetChatsRequest extends Request {
+	body: {
+		user: { _id: string };
+	};
+}
+
+export const getChats = async (
+	req: GetChatsRequest,
+	res: Response
+): Promise<void> => {
+	const userId = req.body.user?._id;
+
+	try {
+		const chats: IChat[] = await ChatModel.find({
+			members: { $in: [userId] },
+		});
+
+		const modifiedChats = [];
+
+		for (const chat of chats) {
+			const otherUserIds = chat.members.filter(
+				(memberId) => memberId !== userId
+			);
+			const otherUsers = (await UserModel.find(
+				{ _id: { $in: otherUserIds } },
+				{ _id: 1, firstName: 1 }
+			).lean()) as { _id: string; firstName: string }[];
+
+			//console.log('otherUsers', otherUsers);
+			otherUsers.forEach((user) => {
+				if (!user.firstName) {
+					user.firstName = 'Anonymous';
+				}
+			});
+
+			modifiedChats.push({
+				chatId: chat._id,
+				members: otherUsers,
+			});
+
+			//console.log('otherUsers', otherUsers);
+		}
+		// console.log('chats', );
+
+		res.status(200).json(modifiedChats);
+	} catch (error) {
+		console.error(error);
+		res.status(500).json(error);
+	}
+};
+
+// export const findUserChats = async (
+// 	req: Request,
+// 	res: Response
+// ): Promise<void> => {
+// 	const userId: string = req.params.id;
+
+// 	try {
+// 		const chats: IChat[] = await ChatModel.find({
+// 			members: { $in: [userId] },
+// 		});
+// 		// console.log('chats', chats);
+
+// 		const chatDataWithOtherUsers: {
+// 			chat: IChat;
+// 			otherUsers: { _id: string; firstName: string }[];
+// 		}[] = [];
+
+// 		console.log('chatDataWithOtherUsers', chatDataWithOtherUsers);
+
+// 		for (const chat of chats) {
+// 			const otherUserIds = chat.members.filter(
+// 				(memberId) => memberId !== userId
+// 			);
+// 			const otherUsers = (await UserModel.find(
+// 				{ _id: { $in: otherUserIds } },
+// 				{ _id: 1, firstName: 1 }
+// 			).lean()) as { _id: string; firstName: string }[];
+
+// 			chatDataWithOtherUsers.push({
+// 				chat,
+// 				otherUsers,
+// 			});
+// 		}
+//
+// 		res.status(200).json(chatDataWithOtherUsers);
+// 	} catch (error) {
+// 		console.error(error);
+// 		res.status(500).json(error);
+// 	}
+// };
+
 export const findChat = async (req: Request, res: Response): Promise<void> => {
-  const { firstId, secondId } = req.params;
+	const { firstId, secondId } = req.params;
 
-  try {
-    const chat: IChat[] = await ChatModel.find({
-      members: { $all: [firstId, secondId] },
-    });
+	try {
+		const chat: IChat[] = await ChatModel.find({
+			members: { $all: [firstId, secondId] },
+		});
 
-    res.status(200).json(chat);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json(error);
-  }
+		console.log('chat', chat);
+
+		res.status(200).json(chat);
+	} catch (error) {
+		console.error(error);
+		res.status(500).json(error);
+	}
 };
