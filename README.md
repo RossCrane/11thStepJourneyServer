@@ -56,14 +56,6 @@ To work on 11th Step Journey, you'll need the following tools and dependencies. 
    npm run start
    ```
 
-4. While in the ios folder, run `exp start` to start the Expo development environment that will build the JS bundle for your app.
-
-5. Run the **_trash-walk.xcworkspace_** file in Xcode (**NOT** the _trash-walk.xcodeproj_).
-
-6. Set up an **Identity** for the app under _General_ in Xcode. You will need to pick a bundle name that will be unique to the particular certificate that you then have to generate under **Signing**
-
-7. Build the app! (click the Play-button in the top left corner when you have picked your target in the drop-down to the right of it.)
-
 ## Tech Stack
 
 - Frontend:
