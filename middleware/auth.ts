@@ -35,26 +35,22 @@ const authMiddleware = async (
 				res.status(401).json({ status: false, error: error.message });
 				return; //
 			} else {
-				// console.log(decoded);
-				const user = await UserModel.findById(decoded.id).select('-password'); // Exclude password from the user object
-
-				// console.log("retrieved user:", user);
+				const user = await UserModel.findById(decoded.id).select('-password');
 
 				if (!user) {
 					res.status(401).json({ status: false, msg: 'User not found' });
 					return;
 				}
 
-				// Attach the user object to the request
 				(req as any).body.user = user;
-				next(); // Proceed to the next middleware
+				next();
 			}
 		});
 	} catch (err) {
 		console.error(err);
-		// Differentiate between token errors and server errors
+
 		res.status(401).json({ status: false, msg: 'Invalid token' });
-		return; // Exit the function after sending the response
+		return;
 	}
 };
 

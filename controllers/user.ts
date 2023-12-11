@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import { createAccessToken } from '../utils/token';
-import { BlacklistModel } from '../utils/blacklist';
 
 import { UserModel } from '../models/UserModel';
 
@@ -43,7 +42,6 @@ export const register = async (
 			});
 		}
 
-		// Password validation
 		if (password.length < 5) {
 			return res.status(400).send({
 				res: {
@@ -91,11 +89,7 @@ export const login = async (
 			});
 		}
 
-		// console.log('Stored Hashed Password:', user.password);
-		// console.log('Entered Password:', password);
-
 		const isMatch: boolean = await bcrypt.compare(password, user.password);
-		console.log(isMatch);
 		if (!isMatch) {
 			return res.status(400).send({
 				res: { data: 'Incorrect Password!', statusCode: 400 },
@@ -128,7 +122,7 @@ export const profile = async (
 		const updatedUser = await UserModel.findByIdAndUpdate(
 			userId,
 			updatedUserData,
-			{ new: true } // Return the updated user document
+			{ new: true }
 		);
 
 		if (!updatedUser) {
@@ -175,7 +169,6 @@ export const getProfile = async (
 			homeGroup: user.homeGroup,
 		};
 
-		// Respond with the user profile
 		res.status(200).json({
 			success: true,
 			data: userProfile,
@@ -189,25 +182,13 @@ export const getProfile = async (
 	}
 };
 
-// export const getUsers = async (req: Request, res: Response): Promise<void> => {
-// 	try {
-// 		const users: IUser[] = await UserModel.find({}, '_id firstName');
-
-// 		res.json(users);
-// 	} catch (error) {
-// 		console.error(error);
-// 		res.status(500).json({ error: 'Error fetching users' });
-// 	}
-// };
-
 export const getUsers = async (req: Request, res: Response): Promise<void> => {
 	try {
 		const users: IUser[] = await UserModel.find({}, '_id firstName');
 
-		// Modify each user to have a firstName of 'Anon' if it's not present
 		const modifiedUsers = users.map((user) => ({
-			...user._doc, // Spread the original user document
-			firstName: user.firstName || 'Anon', // Set firstName to 'Anon' if it's falsy
+			...user._doc,
+			firstName: user.firstName || 'Anon',
 		}));
 
 		res.json(modifiedUsers);
@@ -216,44 +197,3 @@ export const getUsers = async (req: Request, res: Response): Promise<void> => {
 		res.status(500).json({ error: 'Error fetching users' });
 	}
 };
-
-// export const getUsers = async (req: Request, res: Response): Promise<void> => {
-// 	try {
-// 		const users: IUser[] = await UserModel.find({}, '_id firstName');
-
-// 		res.json(users);
-// 	} catch (error) {
-// 		console.error(error);
-// 		res.status(500).json({ error: 'Error fetching users' });
-// 	}
-// };
-
-//Blacklist for Dylan's reference
-export async function logout(
-	req: Request,
-	res: Response
-): Promise<void | Response> {
-	// try {
-	//   const authHeader = req.headers['cookie']; // get the session cookie from request header
-	//   if (!authHeader) return res.sendStatus(204); // No content
-	//   const cookie = authHeader.split('=')[1]; // If there is, split the cookie string to get the actual jwt token
-	//   const accessToken = cookie.split(';')[0];
-	//   const checkIfBlacklisted = await Blacklist.findOne({ token: accessToken }); // Check if that token is blacklisted
-	//   // if true, send a no content response.
-	//   if (checkIfBlacklisted) return res.sendStatus(204);
-	//   // otherwise blacklist token
-	//   const newBlacklist = new Blacklist({
-	//     token: accessToken,
-	//   });
-	//   await newBlacklist.save();
-	//   // Also clear request cookie on client
-	//   res.setHeader('Clear-Site-Data', '"cookies"');
-	//   res.status(200).json({ message: 'You are logged out!' });
-	// } catch (err) {
-	//   res.status(500).json({
-	//     status: 'error',
-	//     message: 'Internal Server Error',
-	//   });
-	// }
-	// res.end();
-}

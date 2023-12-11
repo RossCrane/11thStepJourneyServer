@@ -7,8 +7,6 @@ export const createChat = async (
 	res: Response
 ): Promise<Response> => {
 	const { firstId, secondId } = req.body;
-	// console.log('firstId', firstId);
-	// console.log('secondId', secondId);
 	try {
 		const chat: IChat | null = await ChatModel.findOne({
 			members: { $all: [firstId, secondId] },
@@ -34,7 +32,7 @@ export const findUserChats = async (
 	req: Request,
 	res: Response
 ): Promise<void> => {
-	const userId: string = req.params.id; // req.body.user?._Id;
+	const userId: string = req.params.id;
 
 	try {
 		const chats: IChat[] = await ChatModel.find({
@@ -76,7 +74,6 @@ export const getChats = async (
 				{ _id: 1, firstName: 1 }
 			).lean()) as { _id: string; firstName: string }[];
 
-			//console.log('otherUsers', otherUsers);
 			otherUsers.forEach((user) => {
 				if (!user.firstName) {
 					user.firstName = 'Anonymous';
@@ -87,10 +84,7 @@ export const getChats = async (
 				chatId: chat._id,
 				members: otherUsers,
 			});
-
-			//console.log('otherUsers', otherUsers);
 		}
-		// console.log('chats', );
 
 		res.status(200).json(modifiedChats);
 	} catch (error) {
@@ -99,47 +93,6 @@ export const getChats = async (
 	}
 };
 
-// export const findUserChats = async (
-// 	req: Request,
-// 	res: Response
-// ): Promise<void> => {
-// 	const userId: string = req.params.id;
-
-// 	try {
-// 		const chats: IChat[] = await ChatModel.find({
-// 			members: { $in: [userId] },
-// 		});
-// 		// console.log('chats', chats);
-
-// 		const chatDataWithOtherUsers: {
-// 			chat: IChat;
-// 			otherUsers: { _id: string; firstName: string }[];
-// 		}[] = [];
-
-// 		console.log('chatDataWithOtherUsers', chatDataWithOtherUsers);
-
-// 		for (const chat of chats) {
-// 			const otherUserIds = chat.members.filter(
-// 				(memberId) => memberId !== userId
-// 			);
-// 			const otherUsers = (await UserModel.find(
-// 				{ _id: { $in: otherUserIds } },
-// 				{ _id: 1, firstName: 1 }
-// 			).lean()) as { _id: string; firstName: string }[];
-
-// 			chatDataWithOtherUsers.push({
-// 				chat,
-// 				otherUsers,
-// 			});
-// 		}
-//
-// 		res.status(200).json(chatDataWithOtherUsers);
-// 	} catch (error) {
-// 		console.error(error);
-// 		res.status(500).json(error);
-// 	}
-// };
-
 export const findChat = async (req: Request, res: Response): Promise<void> => {
 	const { firstId, secondId } = req.params;
 
@@ -147,8 +100,6 @@ export const findChat = async (req: Request, res: Response): Promise<void> => {
 		const chat: IChat[] = await ChatModel.find({
 			members: { $all: [firstId, secondId] },
 		});
-
-		console.log('chat', chat);
 
 		res.status(200).json(chat);
 	} catch (error) {
